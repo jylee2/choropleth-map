@@ -6,7 +6,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <!-- Load Bootstrap -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-      <!-- Load custom css -->
+      <!-- Load own css -->
       <link rel="stylesheet" href="style.css">
     <title>Choropleth Map</title>
   </head>
@@ -14,28 +14,28 @@
     <!-- HTML element with Bootstrap container class -->
     <div class="container">
       <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 mainCenter">
-          <h3 id="title">United States Educational Attainment</h3>
-          <h4 id="description">Percentage of adults age 25 and older with a bachelor's degree or higher (2010-2014)</h4>
-          <div id="insert-graph">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 mainCenter">
+          <div> </div>
+          <h3 id="title">USA Educational Attainment by County</h3>
+          <p id="description">Percentage of adults aged 25 and older with a bachelor's degree or higher (2010-2014)</p>
+          <div class="text-center">
             <svg id="canvas">
-              <text id="tooltip"></text>
             </svg>
             <svg id="legend">
             </svg>
+            <div class="text-center" id="tooltip"></div>
           </div>
           <p>Source: <a href="https://www.ers.usda.gov/data-products/county-level-data-sets/download-data.aspx" target="_blank">USDA Economic Research Service</a></p>
         </div>
-        <div class="col-md-1"></div>
+        <div class="col-md-2"></div>
       </div>
     </div>
   </body>
   <!-- Run scripts after body has loaded -->
     <!-- Load D3.js for data visualisation -->
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/topojson.v2.min.js"></script>
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
     <!-- Load JS Component -->
     <script src="main.js"></script>
     <!-- Load freeCodeCamp test script -->
