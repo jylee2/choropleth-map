@@ -5,15 +5,13 @@
 // Data sources
 const CountyURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json';
 const EducationURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
-// Initialise variables to store data later
-let countyData;
-let educationData;
 
-const plotChart = () => {
+// Function for plotting the chart
+const plotChart = (countyData, educationData) => {
 
    // Create svg canvas
-   const svgWidth = 950;
-   const svgHeight = 610;
+   const svgWidth = 960;
+   const svgHeight = 600;
    // <svg> id cannot have "-"
    const canvas = d3.select("#canvas")
                   .attr("width", svgWidth)
@@ -46,7 +44,7 @@ const plotChart = () => {
             });
             //console.log(educationCounty);
             let pctUniEd = educationCounty["bachelorsOrHigher"];
-            // Monochromatic Color Scheme
+            // Monochromatic Color Scheme from https://www.w3schools.com/colors/colors_monochromatic.asp
             if(pctUniEd <= 20) {
                return "#C4D4FF";
             } else if(pctUniEd <= 40) {
@@ -98,6 +96,7 @@ const plotChart = () => {
             let educationCounty = educationData.find( (d) => {
                return (d["fips"] === countyId);
             });
+            // Setting what text to display when mouseover
             return `${educationCounty["area_name"]} (${educationCounty["state"]}): ${educationCounty["bachelorsOrHigher"]}%`;
          });
 
@@ -164,32 +163,46 @@ const plotChart = () => {
 
 };
 
-d3.json(CountyURL).then(
-   // Convert string in CountyURL page into a JS object called "countyD"
-   (countyD, error) => {
-      if(error) {
-         console.log(error);
-      } else {
-         countyData = countyD;
-         console.log(countyData); // TopoJSON with "topology"
-         // Convert from TopoJSON into GeoJSON format to get "features"
-         countyData = topojson.feature(countyD, countyD["objects"]["counties"]);
-         console.log(countyData);
-         countyData = countyData["features"];
-         // or countyData = topojson.feature(countyD, countyD.objects.counties).features;
-         console.log(countyData);
+//"Producing code" is code that can take some time
+//"Consuming code" is code that must wait for the result
+//A Promise is a JavaScript object that links producing code and consuming code
 
-         d3.json(EducationURL).then(
-            (eduD, error) => {
-               if(error) {
-                  console.log(error);
-               } else {
-                  educationData = eduD;
-                  console.log(educationData);
-                  plotChart();
-               }
-            }
-         )
-      }
+// Use async functions and the await keyword, part of the so-called ECMAScript 2017 JavaScript edition
+// the "async" keyword is added to functions to tell them to return a promise rather than directly returning the value
+const fetchData = async () => {
+
+   // "await" only works inside async functions
+   // This can be put in front of any async promise-based function to pause your code on that line until the promise fulfills,
+   // then return the resulting value
+   const countyResp = await fetch(CountyURL);
+   const eduResp = await fetch(EducationURL);
+
+   // Throw error if response is not ok
+   if (!countyResp.ok || !eduResp.ok) {
+      throw new Error(`HTTP error! status: ${countyResp.status} ${eduResp.status}`);
+   } else {
+      // Convert the response to JSON format
+      const counties = await countyResp.json();
+      const education = await eduResp.json();
+      
+      // Convert from TopoJSON with "topology" into GeoJSON format to get "features"
+      let countyData = topojson.feature(counties, counties["objects"]["counties"]);
+      console.log(countyData);
+      countyData = countyData["features"];
+      // or countyData = topojson.feature(countyD, countyD.objects.counties).features;
+      console.log(countyData);
+
+      let educationData = education;
+      console.log(educationData);
+
+      // Call plot chart function
+      plotChart(countyData, educationData);
    }
-);
+   
+}
+
+// Run everything
+fetchData()
+   .catch( e => {
+      console.log('There has been a problem with your fetch operation: ' + e.message);
+});
